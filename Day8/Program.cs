@@ -10,7 +10,7 @@ namespace Day8
     {
         private static void Main(string[] args)
         {
-            new Program().SolvePart1();
+            new Program().Solve();
             Console.ReadLine();
         }
 
@@ -18,7 +18,7 @@ namespace Day8
         {
         }
 
-        private void SolvePart1()
+        private void Solve()
         {
             var input = LoadInput();
             var registers = new Dictionary<string, int>();
