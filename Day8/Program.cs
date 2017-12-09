@@ -23,6 +23,14 @@ namespace Day8
             var input = LoadInput();
             var registers = new Dictionary<string, int>();
             var highest = int.MinValue;
+            var comparators = new Dictionary<string, Func<int, int, bool>> {
+                {"<", (left, right) => left < right},
+                {">", (left, right) => left > right},
+                {"<=", (left, right) => left <= right},
+                {">=", (left, right) => left >= right},
+                {"==", (left, right) => left == right},
+                {"!=", (left, right) => left != right}
+            };
 
             foreach (var line in input)
             {
@@ -40,38 +48,8 @@ namespace Day8
                 if (!registers.ContainsKey(targetReg))
                     registers.Add(targetReg, 0);
 
-                switch (comparison)
-                {
-                    case "<":
-                        if (registers[targetReg] < comparisonAmount)
-                            break;
-                        continue;
-
-                    case ">":
-                        if (registers[targetReg] > comparisonAmount)
-                            break;
-                        continue;
-
-                    case ">=":
-                        if (registers[targetReg] >= comparisonAmount)
-                            break;
-                        continue;
-
-                    case "<=":
-                        if (registers[targetReg] <= comparisonAmount)
-                            break;
-                        continue;
-
-                    case "==":
-                        if (registers[targetReg] == comparisonAmount)
-                            break;
-                        continue;
-
-                    case "!=":
-                        if (registers[targetReg] != comparisonAmount)
-                            break;
-                        continue;
-                }
+                if (!comparators[comparison](registers[targetReg], comparisonAmount))
+                    continue;
 
                 if (action == "inc")
                     registers[reg] += amount;

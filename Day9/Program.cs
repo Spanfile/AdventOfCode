@@ -12,7 +12,7 @@ namespace Day9
     {
         private static void Main(string[] args)
         {
-            new Program().SolvePart1();
+            new Program().Solve();
             Console.ReadLine();
         }
 
@@ -20,7 +20,7 @@ namespace Day9
         {
         }
 
-        private void SolvePart1()
+        private void Solve()
         {
             var input = LoadInput();
             var state = State.Group;
