@@ -68,21 +68,26 @@ namespace Day12
                 connList.AddRange(connections);
             }
 
-            var max = conns.Keys.Max();
             var groups = new List<HashSet<int>>();
 
-            for (var i = 0; i < max; i++)
+            void RecurseConns(ISet<int> ids, int id)
             {
-                var group = groups.FirstOrDefault(s => s.Contains(i) || conns[i].Any(s.Contains));
+                if (ids.Contains(id))
+                    return;
 
-                if (group == null)
-                {
-                    group = new HashSet<int> {i};
-                    groups.Add(group);
-                }
+                ids.Add(id);
+                foreach (var conn in conns[id])
+                    RecurseConns(ids, conn);
+            }
 
-                foreach (var conn in conns[i])
-                    group.Add(conn);
+            foreach (var key in conns.Keys)
+            {
+                if (groups.Any(s => s.Contains(key)))
+                    continue;
+
+                var group = new HashSet<int>();
+                groups.Add(group);
+                RecurseConns(group, key);
             }
 
             Console.WriteLine($"Groups: {groups.Count}");
