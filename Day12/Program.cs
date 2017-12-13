@@ -10,7 +10,7 @@ namespace Day12
     {
         private static void Main(string[] args)
         {
-            new Program().SolvePart2();
+            new Program().SolvePart1();
             Console.ReadLine();
         }
 
