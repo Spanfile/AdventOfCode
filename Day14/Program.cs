@@ -52,13 +52,13 @@ namespace Day14
 
         private void SolvePart2()
         {
-            var input = SampleInput1();
+            var input = LoadInput();
             var grid = new bool[128, 128];
             
             for (var i = 0; i < 128; i++)
             {
                 var hash = KnotHash($"{input}-{i}");
-                Console.WriteLine($"Row {i} hash for {input}-{i}: {hash}");
+                Console.WriteLine($"Hash for {input}-{i}:\t{hash}");
                 var index = 0;
                 foreach (var b in hash.Select(c => "0123456789ABCDEF".IndexOf(char.ToUpper(c))))
                 {
@@ -187,11 +187,22 @@ namespace Day14
                 }
             }
 
-            var hashValues = new int[16];
+            var hashValues = new short[16];
             for (var i = 0; i < 16; i++)
-                hashValues[i] = numbers.Skip(i * 16).Take(16).Aggregate((a, b) => a ^ b);
+            {
+                hashValues[i] = (short)numbers.Skip(i * 16).Take(16).Aggregate((a, b) => a ^ b);
+                Console.Write($"{hashValues[i]}".PadRight(4, ' '));
+            }
+            Console.WriteLine();
 
-            return string.Join("", hashValues.Select(i => i.ToString("X"))).PadLeft(32, '0');
+            var hash = hashValues.Select(h =>
+            {
+                var hex = h.ToString("X").PadLeft(2, '0');
+                Console.Write(hex.PadRight(4, ' '));
+                return hex;
+            }).Aggregate((s1, s2) => s1 + s2);
+            Console.WriteLine();
+            return hash;
         }
 
         private string LoadInput() => "ugkiagan";
