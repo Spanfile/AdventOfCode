@@ -24,13 +24,13 @@ namespace Day14
 
         private void SolvePart1()
         {
-            var input = LoadInput();
+            var input = SampleInput1();
 
             var sum = 0;
             for (var i = 0; i < 128; i++)
             {
                 var hash = KnotHash($"{input}-{i}");
-                //Console.WriteLine($"Hash of {input}-{i}: {hash}");
+                Console.WriteLine($"Hash of {input}-{i}: {hash}");
                 foreach (var b in hash.Select(c => "0123456789ABCDEF".IndexOf(char.ToUpper(c))))
                 {
                     var val = b;
@@ -58,57 +58,60 @@ namespace Day14
             for (var i = 0; i < 128; i++)
             {
                 var hash = KnotHash($"{input}-{i}");
+                Console.WriteLine($"Row {i} hash for {input}-{i}: {hash}");
                 var index = 0;
                 foreach (var b in hash.Select(c => "0123456789ABCDEF".IndexOf(char.ToUpper(c))))
                 {
                     var bitIndex = 0;
+                    var hexBits = Convert.ToString(b, 2).PadLeft(4, '0');
+                    //Console.WriteLine($"Hex {b} is {hexBits}, index {index} row {i}");
 
-                    foreach (var bit in Convert.ToString(b, 2).PadLeft(4, '0'))
+                    foreach (var bit in hexBits)
                         grid[index * 4 + bitIndex++, i] = bit == '1';
 
                     index += 1;
                 }
             }
 
-            void AddNeighbors((int x, int y) coords, ISet<(int, int)> region)
+            void AddAdjacent((int x, int y) coords, ISet<(int, int)> region)
             {
                 if (coords.x > 0)
                 {
-                    (int x, int y) neighbor = (coords.x - 1, coords.y);
-                    if (grid[neighbor.x, neighbor.y] && !region.Contains(neighbor))
+                    (int x, int y) adjacent = (coords.x - 1, coords.y);
+                    if (grid[adjacent.x, adjacent.y] && !region.Contains(adjacent))
                     {
-                        region.Add(neighbor);
-                        AddNeighbors(neighbor, region);
+                        region.Add(adjacent);
+                        AddAdjacent(adjacent, region);
                     }
                 }
 
                 if (coords.y > 0)
                 {
-                    (int x, int y) neighbor = (coords.x, coords.y - 1);
-                    if (grid[neighbor.x, neighbor.y] && !region.Contains(neighbor))
+                    (int x, int y) adjacent = (coords.x, coords.y - 1);
+                    if (grid[adjacent.x, adjacent.y] && !region.Contains(adjacent))
                     {
-                        region.Add(neighbor);
-                        AddNeighbors(neighbor, region);
+                        region.Add(adjacent);
+                        AddAdjacent(adjacent, region);
                     }
                 }
 
                 if (coords.x < 127)
                 {
-                    (int x, int y) neighbor = (coords.x + 1, coords.y);
-                    if (grid[neighbor.x, neighbor.y] && !region.Contains(neighbor))
+                    (int x, int y) adjacent = (coords.x + 1, coords.y);
+                    if (grid[adjacent.x, adjacent.y] && !region.Contains(adjacent))
                     {
-                        region.Add(neighbor);
-                        AddNeighbors(neighbor, region);
+                        region.Add(adjacent);
+                        AddAdjacent(adjacent, region);
                     }
                 }
 
                 if (coords.y < 127)
                 {
-                    (int x, int y) neighbor = (coords.x, coords.y + 1);
-                    if (grid[neighbor.x, neighbor.y] && !region.Contains(neighbor))
+                    (int x, int y) adjacent = (coords.x, coords.y + 1);
+                    if (grid[adjacent.x, adjacent.y] && !region.Contains(adjacent))
                     {
-                        region.Add(neighbor);
-                        AddNeighbors(neighbor, region);
+                        region.Add(adjacent);
+                        AddAdjacent(adjacent, region);
                     }
                 }
             }
@@ -130,7 +133,7 @@ namespace Day14
 
                     region = new HashSet<(int, int)> {coords};
                     regions.Add(region);
-                    AddNeighbors(coords, region);
+                    AddAdjacent(coords, region);
                 }
             }
 
@@ -145,7 +148,9 @@ namespace Day14
                         continue;
                     }
 
-                    sb.Append(regions.FindIndex(r => r.Contains((x, y))).ToString().PadRight(5, ' '));
+                    var x1 = x;
+                    var y1 = y;
+                    sb.Append(regions.FindIndex(r => r.Contains((x1, y1))).ToString().PadRight(5, ' '));
                 }
 
                 sb.AppendLine();
@@ -156,16 +161,16 @@ namespace Day14
             Console.WriteLine($"Total regions: {regions.Count}");
         }
 
-        private string KnotHash(string input)
+        private string KnotHash(string hashInput)
         {
-            var ascii = input.Select(n => (int)n).Concat(new[] { 17, 31, 73, 47, 23 }).ToList();
+            var chars = hashInput.Select(n => (int)n).Concat(new[] { 17, 31, 73, 47, 23 }).ToList();
             var numbers = Enumerable.Range(0, 256).ToList();
             var currentPos = 0;
             var skipSize = 0;
 
             for (var i = 0; i < 64; i++)
             {
-                foreach (var character in ascii)
+                foreach (var character in chars)
                 {
                     var sublist = new List<int>();
 
@@ -186,10 +191,11 @@ namespace Day14
             for (var i = 0; i < 16; i++)
                 hashValues[i] = numbers.Skip(i * 16).Take(16).Aggregate((a, b) => a ^ b);
 
-            return string.Join("", hashValues.Select(i => i.ToString("X")));
+            return string.Join("", hashValues.Select(i => i.ToString("X"))).PadLeft(32, '0');
         }
 
         private string LoadInput() => "ugkiagan";
         private string SampleInput1() => "flqrgnkx";
     }
 }
+

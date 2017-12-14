@@ -53,7 +53,7 @@ namespace Day10
 
         private void SolvePart2()
         {
-            var input = LoadInput();
+            var input = SampleInput5();
 
             var ascii = input.Select(n => (int)n).Concat(new[] {17, 31, 73, 47, 23}).ToList();
             var numbers = Enumerable.Range(0, 256).ToList();
