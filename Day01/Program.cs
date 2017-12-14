@@ -16,6 +16,7 @@ namespace Day1
 
         private Program()
         {
+            
         }
 
         private void SolvePart1()
