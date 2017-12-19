@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Threading;
 
 namespace Day19
 {
@@ -26,10 +25,12 @@ namespace Day19
 
         private void SolvePart1()
         {
-            var input = SampleInput1();
-            var grid = new char[input[0].Length,input.Length];
+            var input = LoadInput();
+            var grid = new char[input.Length,input[0].Length];
             var pos = (0, 0);
             var dir = Direction.Down;
+
+            Console.WriteLine($"Dimensions: {grid.GetLength(1)}x{grid.GetLength(0)}");
 
             var y = 0;
             foreach (var line in input)
@@ -38,23 +39,21 @@ namespace Day19
                 foreach (var c in line)
                 {
                     grid[y, x] = c;
-                    Console.Write(c);
 
-                    if (y != 0)
-                        continue;
-                    if (c == '|')
-                        pos = (x, y);
+                    if (y == 0)
+                        if (c == '|')
+                            pos = (x, y);
 
                     x += 1;
                 }
-                Console.WriteLine();
                 y += 1;
             }
 
             var letters = new List<char>();
+            var steps = 0;
             while (true)
             {
-                Console.Write($"On ({pos.Item1},{pos.Item2}) ({grid[pos.Item2, pos.Item1]}) going {dir}");
+                //Console.Write($"Going {dir} from {pos} ({grid[pos.Item2, pos.Item1]})");
 
                 switch (dir)
                 {
@@ -77,36 +76,50 @@ namespace Day19
 
                 var c = grid[pos.Item2, pos.Item1];
 
-                Console.WriteLine($" -> new pos ({pos.Item1},{pos.Item2}) ({c})");
+                //Console.WriteLine($" -> new pos {pos} ({c})");
+
+                //for (y = 0; y < grid.GetLength(0); y++)
+                //{
+                //    for (var x = 0; x < grid.GetLength(1); x++)
+                //    {
+                //        if (x == pos.Item1 && y == pos.Item2)
+                //            Console.Write('#');
+                //        else
+                //            Console.Write(grid[y, x]);
+                //    }
+                //    Console.WriteLine();
+                //}
 
                 if (char.IsLetter(c))
                     letters.Add(c);
                 else
                 {
-                    if (c != '-' || c != '|' || c != '+')
+                    if (char.IsWhiteSpace(c))
                         break;
                 }
+
+                steps += 1;
 
                 if (c != '+')
                     continue;
 
                 if (dir == Direction.Down || dir == Direction.Up)
                 {
-                    if (!char.IsWhiteSpace(grid[pos.Item1 - 1, pos.Item2]))
+                    if (!char.IsWhiteSpace(grid[pos.Item2, pos.Item1 - 1]))
                         dir = Direction.Left;
-                    else if (!char.IsWhiteSpace(grid[pos.Item1 + 1, pos.Item2]))
+                    else if (!char.IsWhiteSpace(grid[pos.Item2, pos.Item1 + 1]))
                         dir = Direction.Right;
                 }
                 else
                 {
-                    if (!char.IsWhiteSpace(grid[pos.Item1, pos.Item2 - 1]))
+                    if (!char.IsWhiteSpace(grid[pos.Item2 - 1, pos.Item1]))
                         dir = Direction.Up;
-                    else if (!char.IsWhiteSpace(grid[pos.Item1, pos.Item2 + 1]))
+                    else if (!char.IsWhiteSpace(grid[pos.Item2 + 1, pos.Item1]))
                         dir = Direction.Down;
                 }
             }
 
-            Console.WriteLine($"Letters: {letters.Select(c => c.ToString()).Aggregate((s1, s2) => s1.ToString() + s2.ToString())}");
+            Console.WriteLine($"Letters: {letters.Select(c => c.ToString()).Aggregate((s1, s2) => s1.ToString() + s2.ToString())}, steps: {steps}");
         }
 
         private string[] LoadInput() => File.ReadAllLines("input.txt");
