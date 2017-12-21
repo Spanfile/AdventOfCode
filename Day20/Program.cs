@@ -118,7 +118,7 @@ namespace Day20
 
             Console.WriteLine($"Particles: {particles.Count}");
 
-            for (var i = 0; i < 100; i++)
+            for (var i = 0; i < 50; i++)
             {
                 foreach (var p in particles)
                     p.Tick();
