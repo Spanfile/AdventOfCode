@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
+using System.Linq;
 using System.Security.Authentication;
 
 namespace Day23
@@ -33,15 +35,14 @@ namespace Day23
             };
             var index = 0L;
             var mulInvokes = 0L;
-            // TODO: after each instruction, check if the current state of the registers has been seen before
-            // if is -> the program is looping -> print mulInvokes
-            
+            var seenRegisters = new HashSet<long>();
             
             while (true)
             {
                 var ins = input[index];
                 var args = ins.Split(' ');
-
+                var jump = 1L;
+                
                 long value;
                 switch (args[0])
                 {
@@ -75,17 +76,34 @@ namespace Day23
                         //Console.Write($"{pid}: jump (from {index}) {value} if {args[1]} ({cond}) > 0");
 
                         if (cond != 0)
-                        {
-                            index = (index + value) % input.Length;
-                            //Console.WriteLine($" -> new index {index}");
-                            continue;
-                        }
+                            jump = value;
                         //Console.WriteLine();
                         break;
                 }
 
-                index = (index + 1) % input.Length;
+                index = (index + jump) % input.Length;
+                var stateHash = 0L;
+                unchecked
+                {
+                    stateHash = (GetDictionaryHashcode(registers) * 397) ^ index;
+                }
+                if (seenRegisters.Contains(stateHash))
+                {
+                    Console.WriteLine($"State seen before ({stateHash}). Mul invokes: {mulInvokes}");
+                    return;
+                }
+                seenRegisters.Add(stateHash);
             }
+        }
+
+        private int GetDictionaryHashcode<TKey, TValue>(IDictionary<TKey, TValue> dict)
+        {
+            var hash = 0;
+            unchecked
+            {
+                hash = dict.Values.Aggregate(hash, (current, value) => (current * 397) ^ value.GetHashCode());
+            }
+            return hash;
         }
 
         private string[] LoadInput() => File.ReadAllLines("input.txt");
