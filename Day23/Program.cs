@@ -33,7 +33,10 @@ namespace Day23
             };
             var index = 0L;
             var mulInvokes = 0L;
-
+            // TODO: after each instruction, check if the current state of the registers has been seen before
+            // if is -> the program is looping -> print mulInvokes
+            
+            
             while (true)
             {
                 var ins = input[index];
